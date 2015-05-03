@@ -1,0 +1,51 @@
+#!/bin/sh
+#
+# Command line interface for uploading .fit file to Strava.com
+#
+# See instructions at https://github.com/mpolla/stravaup
+#
+# Motivated by https://ironvet.wordpress.com/2014/05/28/how-to-automate-a-garmin-910xt-and-strava-with-linux/
+# See Strava API docs at https://strava.github.io/api/
+#
+# Matti Pöllä <mpo@iki.fi>
+
+set -e
+
+if [ ! -f "/home/mpolla/.stravauprc" ]; then
+    echo "To use the stravaup script, please to to https://www.strava.com/settings/api"
+    echo "and register your own application to get a client id. Then create a file ~/.stravauprc containing"
+    echo "  STRAVAUP_CLIENT_ID = [insert your own]"
+    echo "  STRAVAUP_CLIENT_SECRET = [insert your own]"
+    exit
+fi
+. ~/.stravauprc
+
+if [ $# -ne 1 ]; then
+    echo "Usage: stravaup fitfile"
+    exit 1
+fi
+
+if [ ! -f "$1" ]; then
+    echo "$1: no such file exists!"
+    exit
+fi
+
+# Get authorization code
+if [ "$STRAVAUP_CODE" = "" ]; then
+    echo "Please open the following URL in a browser"
+    echo -n "https://www.strava.com/oauth/authorize?client_id="
+    echo -n "$STRAVAUP_CLIENT_ID"
+    echo "&response_type=code&redirect_uri=http://localhost/index.php&approval_prompt=force&scope=write"
+    echo "Select 'Authorize' which will lead to a redirect into a localhost address. Copy the authorization"
+    echo "code into .stravauprc"
+    echo "  STRAVAUP_CODE = [insert your own]"
+    exit 1
+fi
+
+# Get auth token
+if [ "$TOKEN" = "" ]; then
+    TOKEN=$(curl -s -X POST https://www.strava.com/oauth/token -F client_id="$STRAVAUP_CLIENT_ID" -F client_secret="$STRAVAUP_CLIENT_SECRET" -F code="$STRAVAUP_CODE" | grep -Po '"access_token":.*?[^\\]",' | cut -d':' -f2 | sed -e 's/[^a-z0-9]//g')
+fi
+
+# Upload file
+curl -X POST https://www.strava.com/api/v3/uploads -H "Authorization: Bearer $TOKEN" -F file=@"$1" -F data_type=fit
