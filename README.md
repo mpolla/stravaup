@@ -2,6 +2,10 @@
 Upload files to strava.com from the command line.
 
 ## Prerequisites
+* POSIX shell
+* cURL
+
+## Setup
 1.  Sign up at http://www.strava.com/
 2. Register your own Strava client at https://www.strava.com/settings/api
 3. Create a .stravauprc file in your home directory
