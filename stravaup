@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Command line interface for uploading .fit file to Strava.com
+# Command line interface for uploading to Strava.com
 #
 # See instructions at https://github.com/mpolla/stravaup
 #
@@ -21,10 +21,29 @@ fi
 . ~/.stravauprc
 
 if [ $# -ne 1 ]; then
-    echo "Usage: stravaup fitfile"
+    echo "Usage: stravaup file"
     exit 1
 fi
 
+# Check file type
+filename=$(basename "$1")
+suffix="${filename##*.}"
+datatype=""
+if [ "$suffix" = "fit" ]; then
+    datatype="$suffix"
+fi
+if [ "$suffix" = "tcx" ]; then
+    datatype="$suffix"
+fi
+if [ "$suffix" = "gpx" ]; then
+    datatype="$suffix"
+fi
+if [ "$datatype" = "" ]; then
+    echo "Unknown file type $suffix"
+    exit 1
+fi
+
+# Test whether file exists
 if [ ! -f "$1" ]; then
     echo "$1: no such file exists!"
     exit
@@ -48,4 +67,4 @@ if [ "$TOKEN" = "" ]; then
 fi
 
 # Upload file
-curl -X POST https://www.strava.com/api/v3/uploads -H "Authorization: Bearer $TOKEN" -F file=@"$1" -F data_type=fit
+curl -X POST https://www.strava.com/api/v3/uploads -H "Authorization: Bearer $TOKEN" -F file=@"$1" -F data_type="$datatype"
