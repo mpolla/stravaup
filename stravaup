@@ -79,3 +79,4 @@ fi
 
 # Upload file
 curl -X POST https://www.strava.com/api/v3/uploads -H "Authorization: Bearer $TOKEN" $activity_type $private -F file=@"$1" -F data_type="$datatype"
+echo
