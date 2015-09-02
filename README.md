@@ -28,7 +28,7 @@ Upload a sigle fit file
 
 Use find and xargs to upload everything
 
-    find -iname \*.fit | while read i; do ~/tmp/stravaup/stravaup "$i"; done
+    find -iname \*.fit | xargs stravaup
 
 ## More info
 
