@@ -11,14 +11,14 @@
 
 set -e
 
-if [ ! -f "/home/mpolla/.stravauprc" ]; then
+if [ ! -f "${HOME}/.stravauprc" ]; then
     echo "To use the stravaup script, please to to https://www.strava.com/settings/api"
     echo "and register your own application to get a client id. Then create a file ~/.stravauprc containing"
     echo "  STRAVAUP_CLIENT_ID = [insert your own]"
     echo "  STRAVAUP_CLIENT_SECRET = [insert your own]"
     exit
 fi
-. ~/.stravauprc
+source "${HOME}/.stravauprc"
 
 if [ $# -ne 1 ]; then
     echo "Usage: stravaup file"
