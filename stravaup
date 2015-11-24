@@ -76,6 +76,7 @@ fi
 
 [ -n "$2" ] && activity_type="-F activity_type=$2"
 [ -n "$PRIVATE" ] && private="-F private=1"
+[ $(which calc-trimp.py) ] && TRIMP="-F description='TRIMP: $(calc-trimp.py $1)'"
 
 # Upload file
 curl -X POST https://www.strava.com/api/v3/uploads -H "Authorization: Bearer $TOKEN" $activity_type $private -F file=@"$1" -F data_type="$datatype"
