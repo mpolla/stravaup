@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Command line interface for uploading to Strava.com
 #
@@ -11,6 +11,16 @@
 
 set -e
 
+# script name
+PROG=$(basename $0)
+
+die()
+{
+  echo -e >&2 $PROG: "$@"
+  echo -e >&2 $PROG: "exiting."
+  exit 1
+}
+
 if [ ! -f "${HOME}/.stravauprc" ]; then
     echo "To use the stravaup script, please to to https://www.strava.com/settings/api"
     echo "and register your own application to get a client id. Then create a file ~/.stravauprc containing"
@@ -18,10 +28,11 @@ if [ ! -f "${HOME}/.stravauprc" ]; then
     echo "  STRAVAUP_CLIENT_SECRET = [insert your own]"
     exit
 fi
+
 source "${HOME}/.stravauprc"
 
 if [ $# -ne 1 ]; then
-    echo "Usage: stravaup file"
+    echo "Usage: stravaup file [activity type (run, ride, ...)]"
     exit 1
 fi
 
@@ -38,16 +49,10 @@ fi
 if [ "$suffix" = "gpx" ]; then
     datatype="$suffix"
 fi
-if [ "$datatype" = "" ]; then
-    echo "Unknown file type $suffix"
-    exit 1
-fi
+[ "$datatype" = "" ] && die "unknown file type $suffix"
 
 # Test whether file exists
-if [ ! -f "$1" ]; then
-    echo "$1: no such file exists!"
-    exit
-fi
+[ -f "$1" ] || die "input file $1 not found."
 
 # Get authorization code
 if [ "$STRAVAUP_CODE" = "" ]; then
@@ -64,7 +69,15 @@ fi
 # Get auth token
 if [ "$TOKEN" = "" ]; then
     TOKEN=$(curl -s -X POST https://www.strava.com/oauth/token -F client_id="$STRAVAUP_CLIENT_ID" -F client_secret="$STRAVAUP_CLIENT_SECRET" -F code="$STRAVAUP_CODE" | grep -Po '"access_token":.*?[^\\]",' | cut -d':' -f2 | sed -e 's/[^a-z0-9]//g')
+    if [ "$TOKEN" = "" ]; then
+      die "failed getting token."
+    fi
 fi
 
+[ -n "$2" ] && activity_type="-F activity_type=$2"
+[ -n "$PRIVATE" ] && private="-F private=1"
+[ $(which calc-trimp.py) ] && activity_description="-F description=TRIMP:$(calc-trimp.py $1)"
+
 # Upload file
-curl -X POST https://www.strava.com/api/v3/uploads -H "Authorization: Bearer $TOKEN" -F file=@"$1" -F data_type="$datatype"
+curl -X POST https://www.strava.com/api/v3/uploads -H "Authorization: Bearer $TOKEN" $activity_type $private -F file=@"$1" -F data_type="$datatype" $activity_description
+echo

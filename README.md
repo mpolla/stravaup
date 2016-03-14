@@ -6,7 +6,7 @@ Upload files to strava.com from the command line.
 * cURL
 
 ## Setup
-1.  Sign up at http://www.strava.com/
+1. Sign up at http://www.strava.com/
 2. Register your own Strava client at https://www.strava.com/settings/api
 3. Create a .stravauprc file in your home directory
 ~~~
@@ -19,6 +19,12 @@ STRAVAUP_CLIENT_SECRET=FIXME
 * Copy the code from the redirect URL into your .stravauprc,
 ~~~
 STRAVAUP_CODE=FIXME
+~~~
+
+5. Further options that can be specified in .stravauprc:
+* Create private activities by default
+~~~
+PRIVATE=1
 ~~~
 
 ## Usage
