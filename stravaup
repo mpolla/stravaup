@@ -27,7 +27,7 @@ fi
 
 # Check file type
 filename=$(basename "$1")
-suffix="${filename##*.}"
+suffix="${filename#*.}"
 datatype=""
 if [ "$suffix" = "fit" ]; then
     datatype="$suffix"
@@ -36,6 +36,15 @@ if [ "$suffix" = "tcx" ]; then
     datatype="$suffix"
 fi
 if [ "$suffix" = "gpx" ]; then
+    datatype="$suffix"
+fi
+if [ "$suffix" = "fit.gz" ]; then
+    datatype="$suffix"
+fi
+if [ "$suffix" = "tcx.gz" ]; then
+    datatype="$suffix"
+fi
+if [ "$suffix" = "gpx.gz" ]; then
     datatype="$suffix"
 fi
 if [ "$datatype" = "" ]; then
