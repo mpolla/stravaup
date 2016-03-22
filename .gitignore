@@ -55,3 +55,10 @@ docs/_build/
 
 # PyBuilder
 target/
+
+*.fit
+*.fit.gz
+*.tcx
+*.tcx.gz
+*.gpx
+*.gpx.gz
