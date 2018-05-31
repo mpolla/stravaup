@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Command line interface for uploading to Strava.com
 #
