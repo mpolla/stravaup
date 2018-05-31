@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Command line interface for uploading to Strava.com
 #
@@ -16,7 +16,7 @@ if [ ! -f "${HOME}/.stravauprc" ]; then
     echo "and register your own application to get a client id. Then create a file ~/.stravauprc containing"
     echo "  STRAVAUP_CLIENT_ID = [insert your own]"
     echo "  STRAVAUP_CLIENT_SECRET = [insert your own]"
-    exit
+    exit 1
 fi
 source "${HOME}/.stravauprc"
 
@@ -55,7 +55,7 @@ fi
 # Test whether file exists
 if [ ! -f "$1" ]; then
     echo "$1: no such file exists!"
-    exit
+    exit 1
 fi
 
 # Get authorization code
@@ -76,4 +76,7 @@ if [ "$TOKEN" = "" ]; then
 fi
 
 # Upload file
-curl -X POST https://www.strava.com/api/v3/uploads -H "Authorization: Bearer $TOKEN" -F file=@"$1" -F data_type="$datatype"
+curl -X POST https://www.strava.com/api/v3/uploads -H "Authorization: Bearer $TOKEN" -F file=@"$1" -F data_type="$datatype" || exit 1
+
+exit 0
+
