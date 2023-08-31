@@ -4,6 +4,7 @@ Upload FIT, TCX and GPX files to strava.com from the command line.
 ## Prerequisites
 * POSIX shell
 * cURL
+* Python 3
 
 ## Setup
 1.  Sign up at http://www.strava.com/
@@ -14,9 +15,11 @@ STRAVAUP_CLIENT_ID=FIXME
 STRAVAUP_CLIENT_SECRET=FIXME
 ~~~
 4. Get your authorization code
-* Go to https://www.strava.com/oauth/authorize?client_id=YOUR_STRAVAUP_CLIENT_ID&response_type=code&redirect_uri=http://localhost/index.php&approval_prompt=force&scope=write
-* Select 'Authorize' which will lead to a redirect URL
-* Copy the code from the redirect URL into your .stravauprc:
+  On the first run of the program, you will be prompted to visit a URL
+  with your browser and click `Authorize`.
+  The browser must be running on the same computer as the _stravaup_ script.
+  Alternatively, after clicking on `Authorize`, copy the `code` parameter
+  from the redirect URL into your .stravauprc:
 ~~~
 STRAVAUP_CODE=FIXME
 ~~~

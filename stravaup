@@ -63,11 +63,14 @@ if [ "$STRAVAUP_CODE" = "" ]; then
     echo "Please open the following URL in a browser"
     echo -n "https://www.strava.com/oauth/authorize?client_id="
     echo -n "$STRAVAUP_CLIENT_ID"
-    echo "&response_type=code&redirect_uri=http://localhost/index.php&approval_prompt=force&scope=activity:write"
-    echo "Select 'Authorize' which will lead to a redirect into a localhost address. Copy the authorization"
-    echo "code into .stravauprc"
-    echo "  STRAVAUP_CODE = [insert your own]"
-    exit 1
+    echo "&response_type=code&redirect_uri=http://localhost:8080/capture&approval_prompt=force&scope=activity:write"
+    echo "Select 'Authorize' to provide this script with the required authorization code."
+    STRAVAUP_CODE=$(python3 $(dirname $0)/server.py)
+    if [ -z "$STRAVAUP_CODE" ] ; then
+        echo "Unable to obtain authorization code" 1>&2
+        exit 1
+    fi
+    echo "STRAVAUP_CODE=$STRAVAUP_CODE" >> ${HOME}/.stravauprc
 fi
 
 # Get auth token
@@ -87,4 +90,5 @@ if [ "$TOKEN" = "" ]; then
 fi
 
 # Upload file
+echo "Uploading file..."
 curl -X POST https://www.strava.com/api/v3/uploads -H "Authorization: Bearer $TOKEN" -F file=@"$1" -F data_type="$datatype"
